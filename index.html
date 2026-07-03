@@ -330,6 +330,12 @@ body{
   display:inline-block; margin:14px 0 0;
   font-size:13px; font-weight:600; color:var(--navy-600); text-decoration:none;
 }
+/* B2C renders "Forgot your password?" ABOVE the input; move it BELOW via flex order */
+#api .entry-item:has(#forgotPassword){ display:flex; flex-direction:column; }
+#api .entry-item:has(#forgotPassword) > *{ order:2; }
+#api .entry-item:has(#forgotPassword) > label{ order:1; }
+#api .entry-item:has(#forgotPassword) > #forgotPassword,
+#api .entry-item:has(#forgotPassword) > a#forgotPassword{ order:3; align-self:flex-start; margin-top:10px; }
 #api #forgotPassword:hover,
 #api a#forgotPassword:hover,
 #api .forgotPassword:hover{ color:var(--navy-700); text-decoration:underline; }
