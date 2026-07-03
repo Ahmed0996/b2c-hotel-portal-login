@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en" data-preload="true">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hilbertech Hotel Portal</title>
+<style>
+/* ============================================================================
+   HILBERTECH HOTEL PORTAL — Azure AD B2C unified custom UI template.
+   One self-contained file · CSS-only · no external assets · no JavaScript.
+   Assign this same template to multiple B2C page layouts: B2C injects the
+   correct form into <div id="api"> per page — sign-in (login) or MFA/OTP
+   (code verification). The CSS below builds the brand CORNICE and SKINS both
+   injected DOM sets. Selector names follow the default B2C "unified /
+   selfAsserted" and "multifactor" contracts; equivalents matched defensively.
+   ========================================================================== */
+
+/* ---- Brand tokens (Hilbertech Extranet design system) ------------------- */
+:root{
+  --navy-50:#EEF2F8; --navy-100:#D8E1EF; --navy-200:#B4C5DD; --navy-500:#345C8C;
+  --navy-600:#1A3C6E; --navy-700:#163358; --navy-800:#122844; --navy-900:#0D1B2E;
+  --amber-200:#FBD88E; --amber-400:#FBBF45; --amber-500:#F59E0B; --amber-600:#D97E06;
+  --gray-50:#F9FAFB; --gray-100:#F3F4F6; --gray-200:#E5E7EB; --gray-300:#D1D5DB;
+  --gray-400:#9CA3AF; --gray-500:#6B7280; --gray-700:#374151; --gray-900:#111827;
+  --white:#FFFFFF;
+  --success-50:#ECFDF3; --success-100:#DCFCE7; --success-500:#16A34A; --success-700:#15803D;
+  --danger-50:#FEF2F2; --danger-100:#FEE2E2; --danger-500:#DC2626; --danger-700:#B91C1C;
+  --ring-focus:rgba(26,60,110,0.20);
+  --radius-sm:6px; --radius-lg:12px; --radius-xl:16px;
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Inter",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:var(--font);
+  font-size:14px;
+  line-height:1.5;
+  color:var(--gray-700);
+  background:var(--gray-50);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+
+/* ---- Page frame: split brand panel + form side -------------------------- */
+.page{ display:flex; min-height:100vh; }
+
+.brand{
+  position:relative; overflow:hidden; flex:0 0 46%;
+  background:linear-gradient(160deg,var(--navy-700),var(--navy-900));
+  color:var(--white);
+  padding:48px;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.brand .ring{ position:absolute; border-radius:50%; pointer-events:none; }
+.brand .ring.r1{ top:-80px; right:-80px; width:320px; height:320px; border:1px solid rgba(245,158,11,.25); }
+.brand .ring.r2{ bottom:-120px; left:-60px; width:360px; height:360px; border:1px solid rgba(245,158,11,.15); }
+.brand-lockup{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:18px; letter-spacing:-.01em; z-index:1; }
+.brand-mark{ width:34px; height:34px; flex:0 0 auto; }
+.brand-copy{ z-index:1; }
+.brand-eyebrow{ font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--amber-200); margin-bottom:12px; }
+.brand-copy h1{ font-size:26px; line-height:1.25; margin:0; font-weight:700; letter-spacing:-.01em; max-width:15ch; }
+.brand-copy p{ color:var(--navy-200); margin:14px 0 0; max-width:40ch; line-height:1.6; }
+.brand-foot{ color:var(--navy-200); font-size:12px; z-index:1; }
+
+/* Form side */
+.form-side{ flex:1; display:flex; align-items:center; justify-content:center; padding:32px 24px; }
+.auth-card{ width:100%; max-width:380px; }
+
+.mobile-lockup{ display:none; align-items:center; gap:10px; margin-bottom:28px; }
+.mobile-lockup .brand-mark{ width:30px; height:30px; }
+.mobile-lockup span{ font-weight:700; font-size:16px; color:var(--navy-600); letter-spacing:-.01em; }
+
+.auth-foot{ margin-top:28px; text-align:center; font-size:12px; color:var(--gray-500); line-height:1.6; }
+.auth-foot .ms-note{ display:inline-flex; align-items:center; gap:6px; }
+.auth-foot .ms-dot{ display:inline-grid; grid-template-columns:1fr 1fr; gap:1px; width:12px; height:12px; }
+.auth-foot .ms-dot i{ display:block; }
+.auth-foot .ms-dot i:nth-child(1){ background:#F25022; }
+.auth-foot .ms-dot i:nth-child(2){ background:#7FBA00; }
+.auth-foot .ms-dot i:nth-child(3){ background:#00A4EF; }
+.auth-foot .ms-dot i:nth-child(4){ background:#FFB900; }
+
+/* ==========================================================================
+   SHARED SKIN — applies to whichever form B2C injects into #api
+   ========================================================================== */
+#api{ width:100%; }
+#api .localAccount,
+#api form,
+#api .entry{ width:100%; }
+
+/* Heading — .intro (login: "Sign in" · OTP: "Enter your code") */
+#api .intro,
+#api .intro h2{ margin:0; }
+#api .intro h2,
+#api h1.intro{
+  font-size:22px; font-weight:700; color:var(--navy-600);
+  letter-spacing:-.01em; margin:0 0 6px;
+}
+#api .intro p{ color:var(--gray-500); margin:0 0 22px; line-height:1.55; }
+
+/* Field groups */
+#api .entry{ display:block; }
+#api .entry-item{ margin:0 0 16px; }
+#api .entry-item label,
+#api label[for="signInName"],
+#api label[for="email"],
+#api label[for="password"],
+#api label[for="verificationCode"],
+#api label[for="emailVerificationCode"],
+#api label[for="phoneNumber"]{
+  display:block; font-size:13px; font-weight:600; color:var(--gray-700);
+  margin:0 0 6px;
+}
+
+/* Standard text/email/password/phone inputs */
+#api input[type="text"],
+#api input[type="email"],
+#api input[type="tel"],
+#api input[type="password"],
+#api input#signInName,
+#api input#email,
+#api input#password,
+#api input#phoneNumber{
+  width:100%; height:44px; padding:0 12px;
+  font-family:var(--font); font-size:14px; color:var(--gray-900);
+  background:var(--white);
+  border:1px solid var(--gray-300);
+  border-radius:var(--radius-sm);
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  appearance:none;
+}
+
+/* OTP code field — short, centered, mono, wide tracking so it reads as a code */
+#api input#verificationCode,
+#api input#emailVerificationCode,
+#api input.verifyCode,
+#api input[name="verificationCode"],
+#api input[autocomplete="one-time-code"]{
+  width:100%; height:56px; padding:0 12px;
+  font-family:var(--mono); font-size:26px; font-weight:600;
+  text-align:center; letter-spacing:.42em; text-indent:.42em;
+  color:var(--navy-600);
+  background:var(--white);
+  border:1px solid var(--gray-300);
+  border-radius:var(--radius-sm);
+  outline:none;
+  transition:border-color .15s ease, box-shadow .15s ease;
+  appearance:none;
+}
+#api input::placeholder{ color:var(--gray-400); }
+#api input#verificationCode::placeholder,
+#api input#emailVerificationCode::placeholder{ color:var(--gray-300); letter-spacing:.3em; }
+#api input:hover{ border-color:var(--gray-400); }
+#api input:focus{ border-color:var(--navy-600); box-shadow:0 0 0 3px var(--ring-focus); }
+
+/* Input error state */
+#api input[aria-invalid="true"],
+#api .entry-item.error input,
+#api .invalid input{ border-color:var(--danger-500); }
+#api input[aria-invalid="true"]:focus,
+#api .entry-item.error input:focus{ box-shadow:0 0 0 3px rgba(220,38,38,.18); }
+
+/* Field-level error (.error.itemLevel) */
+#api .error.itemLevel,
+#api .itemLevel{
+  display:block; color:var(--danger-700); font-size:12.5px; font-weight:500;
+  margin-top:6px;
+}
+#api .error.itemLevel p,
+#api .itemLevel p{ margin:0; }
+#api .error.itemLevel:empty,
+#api .error.pageLevel:empty{ display:none; }
+
+/* Page-level error banner (.error.pageLevel) */
+#api .error.pageLevel,
+#api .pageLevel{
+  display:block;
+  background:var(--danger-50);
+  border:1px solid var(--danger-100);
+  color:var(--danger-700);
+  border-radius:var(--radius-sm);
+  padding:11px 13px 11px 40px;
+  font-size:13px; font-weight:500; line-height:1.45;
+  margin:0 0 18px;
+  position:relative;
+}
+#api .error.pageLevel p,
+#api .pageLevel p{ margin:0; }
+#api .error.pageLevel::before,
+#api .pageLevel::before{
+  content:""; position:absolute; left:13px; top:12px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--danger-500);
+  -webkit-mask:radial-gradient(circle at 8px 5px,#000 1.4px,transparent 1.5px),linear-gradient(#000,#000) 7.2px 6px/1.6px 5px no-repeat;
+          mask:radial-gradient(circle at 8px 5px,#000 1.4px,transparent 1.5px),linear-gradient(#000,#000) 7.2px 6px/1.6px 5px no-repeat;
+}
+
+/* Success message — OTP "code verified" / generic success states */
+#api .verified,
+#api .success,
+#api .verifySuccess,
+#api p.success{
+  display:block;
+  background:var(--success-50);
+  border:1px solid var(--success-100);
+  color:var(--success-700);
+  border-radius:var(--radius-sm);
+  padding:11px 13px 11px 40px;
+  font-size:13px; font-weight:600; line-height:1.45;
+  margin:0 0 18px;
+  position:relative;
+}
+#api .verified::before,
+#api .success::before,
+#api .verifySuccess::before,
+#api p.success::before{
+  content:""; position:absolute; left:13px; top:13px;
+  width:16px; height:16px; border-radius:50%;
+  background:var(--success-500);
+  -webkit-mask:linear-gradient(45deg,transparent 46%,#000 46% 54%,transparent 54%) 4.5px 1px/7px 9px no-repeat,linear-gradient(-45deg,transparent 40%,#000 40% 60%,transparent 60%) 2px 4px/5px 6px no-repeat;
+          mask:linear-gradient(45deg,transparent 46%,#000 46% 54%,transparent 54%) 4.5px 1px/7px 9px no-repeat,linear-gradient(-45deg,transparent 40%,#000 40% 60%,transparent 60%) 2px 4px/5px 6px no-repeat;
+}
+
+/* ---- Primary buttons — Sign in (#next) · Verify code (#verifyCode) · Continue (#continue) */
+#api button,
+#api .buttons button,
+#api button#next,
+#api button#verifyCode,
+#api button#continue,
+#api input[type="submit"]#continue{
+  position:relative;
+  width:100%; height:46px; margin-top:4px;
+  font-family:var(--font); font-size:15px; font-weight:600; letter-spacing:.01em;
+  color:var(--white);
+  background:var(--navy-600);
+  border:1px solid var(--navy-600);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  transition:background .15s ease, transform .05s ease, box-shadow .15s ease;
+}
+#api button:hover,
+#api button#next:hover,
+#api button#verifyCode:hover,
+#api button#continue:hover{ background:var(--navy-700); border-color:var(--navy-700); }
+#api button:focus-visible,
+#api button#next:focus-visible,
+#api button#verifyCode:focus-visible,
+#api button#continue:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--ring-focus); }
+#api button:active,
+#api button#next:active,
+#api button#verifyCode:active,
+#api button#continue:active{ transform:translateY(1px); }
+#api button[disabled]{
+  background:var(--navy-200); border-color:var(--navy-200);
+  color:var(--white); cursor:not-allowed; transform:none; box-shadow:none;
+}
+
+/* ---- Secondary buttons — Send new code (#retryCode/.sendNewCode) + phone Send Code / Call Me */
+#api button#retryCode,
+#api button.sendNewCode,
+#api a#retryCode,
+#api button#readOnlyEmail_ver_but_resend,
+#api button#sendCode,
+#api button#callMe{
+  width:100%; height:44px; margin-top:10px;
+  font-family:var(--font); font-size:14px; font-weight:600;
+  color:var(--navy-600);
+  background:var(--white);
+  border:1px solid var(--gray-300);
+  border-radius:var(--radius-sm);
+  cursor:pointer;
+  transition:background .15s ease, border-color .15s ease;
+}
+#api button#retryCode:hover,
+#api button.sendNewCode:hover,
+#api a#retryCode:hover,
+#api button#readOnlyEmail_ver_but_resend:hover,
+#api button#sendCode:hover,
+#api button#callMe:hover{ background:var(--navy-50); border-color:var(--navy-500); }
+#api button#retryCode:focus-visible,
+#api button.sendNewCode:focus-visible,
+#api button#sendCode:focus-visible,
+#api button#callMe:focus-visible{ outline:none; box-shadow:0 0 0 3px var(--ring-focus); }
+/* Resend disabled during the B2C countdown */
+#api button#retryCode[disabled],
+#api button.sendNewCode[disabled],
+#api button#readOnlyEmail_ver_but_resend[disabled]{
+  color:var(--gray-400); background:var(--gray-50);
+  border-color:var(--gray-200); cursor:not-allowed;
+}
+
+/* Loading / verifying state on the primary button */
+#api button[aria-busy="true"],
+#api button.loading{ color:transparent; cursor:progress; pointer-events:none; }
+#api button[aria-busy="true"]::after,
+#api button.loading::after{
+  content:""; position:absolute; top:50%; left:50%;
+  width:18px; height:18px; margin:-9px 0 0 -9px;
+  border:2px solid rgba(255,255,255,.45);
+  border-top-color:var(--white);
+  border-radius:50%;
+  animation:hb-spin .7s linear infinite;
+}
+
+/* Full-form working spinner some contracts render */
+#api .working,
+#api #claimVerificationSpinner{ display:block; min-height:40px; position:relative; margin:6px 0; }
+#api .working::after,
+#api #claimVerificationSpinner::after{
+  content:""; position:absolute; top:50%; left:50%;
+  width:26px; height:26px; margin:-13px 0 0 -13px;
+  border:3px solid var(--navy-100); border-top-color:var(--navy-600);
+  border-radius:50%; animation:hb-spin .7s linear infinite;
+}
+@keyframes hb-spin{ to{ transform:rotate(360deg); } }
+
+#api .buttons,
+#api #buttons{ display:block; }
+
+/* Forgot password (login) — a#forgotPassword */
+#api #forgotPassword,
+#api a#forgotPassword,
+#api .forgotPassword{
+  display:inline-block; margin:14px 0 0;
+  font-size:13px; font-weight:600; color:var(--navy-600); text-decoration:none;
+}
+#api #forgotPassword:hover,
+#api a#forgotPassword:hover,
+#api .forgotPassword:hover{ color:var(--navy-700); text-decoration:underline; }
+
+/* Remaining links */
+#api a{ color:var(--navy-600); font-weight:600; text-decoration:none; }
+#api a:hover{ color:var(--navy-700); text-decoration:underline; }
+#api a:focus-visible{ outline:2px solid var(--navy-600); outline-offset:2px; border-radius:3px; }
+
+/* Divider (login, if injected) */
+#api .divider{
+  display:flex; align-items:center; text-align:center;
+  color:var(--gray-400); font-size:12px; font-weight:600;
+  text-transform:uppercase; letter-spacing:.06em; margin:20px 0;
+}
+#api .divider h2{ font:inherit; margin:0 12px; color:var(--gray-400); }
+#api .divider::before,
+#api .divider::after{ content:""; flex:1; height:1px; background:var(--gray-200); }
+
+/* ==========================================================================
+   HIDE — no self-service sign-up, no social login on any page.
+   ========================================================================== */
+#api #createAccount,
+#api .create,
+#api .createContainer,
+#api a#createAccount,
+#api .sign-up,
+#api .signup,
+#api .social,
+#api .options,
+#api .socialAccount,
+#api .accountButton,
+#api #MicrosoftAccountExchange{
+  display:none !important;
+}
+
+/* ==========================================================================
+   Responsive — mobile-first
+   ========================================================================== */
+@media (max-width:820px){
+  .brand{ display:none; }
+  .mobile-lockup{ display:flex; }
+  .form-side{ align-items:flex-start; padding:40px 20px; }
+  .auth-card{ max-width:420px; margin:0 auto; }
+}
+@media (max-width:360px){
+  .form-side{ padding:28px 16px; }
+  #api input#verificationCode,
+  #api input#emailVerificationCode{ font-size:22px; letter-spacing:.3em; text-indent:.3em; }
+}
+@media (prefers-reduced-motion:reduce){
+  #api button[aria-busy="true"]::after,
+  #api button.loading::after,
+  #api .working::after{ animation-duration:1.4s; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Brand panel (frame — sits outside #api, shared by every B2C page) -->
+  <aside class="brand">
+    <span class="ring r1"></span>
+    <span class="ring r2"></span>
+    <div class="brand-lockup">
+      <svg class="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+        <rect width="34" height="34" rx="8" fill="#F59E0B"/>
+        <path d="M11 9v16M23 9v16M11 17h12" stroke="#0D1B2E" stroke-width="2.6" stroke-linecap="round"/>
+        <circle cx="23" cy="17" r="3" fill="#0D1B2E"/>
+      </svg>
+      Hilbertech Hotel Portal
+    </div>
+    <div class="brand-copy">
+      <div class="brand-eyebrow">Partner Portal</div>
+      <h1>Distribute and manage hotel inventory in one place.</h1>
+      <p>Sign in to your Hilbertech account to publish properties, set rates and availability, and manage bookings.</p>
+    </div>
+    <div class="brand-foot">© 2026 Hilbertech · v1.0</div>
+  </aside>
+
+  <!-- Form side -->
+  <main class="form-side">
+    <div class="auth-card">
+
+      <div class="mobile-lockup">
+        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
+          <rect width="34" height="34" rx="8" fill="#1A3C6E"/>
+          <path d="M11 9v16M23 9v16M11 17h12" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round"/>
+          <circle cx="23" cy="17" r="3" fill="#F59E0B"/>
+        </svg>
+        <span>Hilbertech Hotel Portal</span>
+      </div>
+
+      <!-- Azure AD B2C injects the current page's form (sign-in or OTP/MFA) here. -->
+      <div id="api"></div>
+
+      <div class="auth-foot">
+        <div class="ms-note">
+          <span class="ms-dot" aria-hidden="true"><i></i><i></i><i></i><i></i></span>
+          Protected by Microsoft Azure AD B2C
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+</body>
+</html>
