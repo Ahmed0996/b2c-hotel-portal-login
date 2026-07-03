@@ -163,21 +163,18 @@ body{
 #api input[aria-invalid="true"]:focus,
 #api .entry-item.error input:focus{ box-shadow:0 0 0 3px rgba(220,38,38,.18); }
 
-/* Field-level error (.error.itemLevel) */
+/* Field-level error (.error.itemLevel) — appearance only; B2C controls visibility */
 #api .error.itemLevel,
 #api .itemLevel{
-  display:block; color:var(--danger-700); font-size:12.5px; font-weight:500;
+  color:var(--danger-700); font-size:12.5px; font-weight:500;
   margin-top:6px;
 }
 #api .error.itemLevel p,
 #api .itemLevel p{ margin:0; }
-#api .error.itemLevel:empty,
-#api .error.pageLevel:empty{ display:none; }
 
-/* Page-level error banner (.error.pageLevel) */
+/* Page-level error banner (.error.pageLevel) — appearance only */
 #api .error.pageLevel,
 #api .pageLevel{
-  display:block;
   background:var(--danger-50);
   border:1px solid var(--danger-100);
   color:var(--danger-700);
@@ -187,6 +184,11 @@ body{
   margin:0 0 18px;
   position:relative;
 }
+/* Don't override B2C's hidden default; reveal only when there's real error text */
+#api .error.itemLevel:empty,
+#api .error.pageLevel:empty{ display:none; }
+#api .error.itemLevel:has(:not(:empty)),
+#api .error.pageLevel:has(:not(:empty)){ display:block; }
 #api .error.pageLevel p,
 #api .pageLevel p{ margin:0; }
 #api .error.pageLevel::before,
@@ -387,16 +389,14 @@ body{
 <body>
 <div class="page">
 
-  <!-- Brand panel (frame — sits outside #api, shared by every B2C page) -->
-  <aside class="brand">
+  <!-- Brand panel (frame — sits outside #api, shared by every B2C page).
+       NOTE: B2C sanitizes injected HTML — use <div> (not <aside>/<main>) and
+       reference the logo as an EXTERNAL <img> (inline <svg> gets stripped). -->
+  <div class="brand">
     <span class="ring r1"></span>
     <span class="ring r2"></span>
     <div class="brand-lockup">
-      <svg class="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-        <rect width="34" height="34" rx="8" fill="#F59E0B"/>
-        <path d="M11 9v16M23 9v16M11 17h12" stroke="#0D1B2E" stroke-width="2.6" stroke-linecap="round"/>
-        <circle cx="23" cy="17" r="3" fill="#0D1B2E"/>
-      </svg>
+      <img class="brand-mark" src="https://ahmed0996.github.io/b2c-hotel-portal-login/mark-light.svg" alt="" />
       Hilbertech Hotel Portal
     </div>
     <div class="brand-copy">
@@ -405,18 +405,14 @@ body{
       <p>Sign in to your Hilbertech account to publish properties, set rates and availability, and manage bookings.</p>
     </div>
     <div class="brand-foot">© 2026 Hilbertech · v1.0</div>
-  </aside>
+  </div>
 
   <!-- Form side -->
-  <main class="form-side">
+  <div class="form-side">
     <div class="auth-card">
 
       <div class="mobile-lockup">
-        <svg class="brand-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true">
-          <rect width="34" height="34" rx="8" fill="#1A3C6E"/>
-          <path d="M11 9v16M23 9v16M11 17h12" stroke="#F59E0B" stroke-width="2.6" stroke-linecap="round"/>
-          <circle cx="23" cy="17" r="3" fill="#F59E0B"/>
-        </svg>
+        <img class="brand-mark" src="https://ahmed0996.github.io/b2c-hotel-portal-login/mark-dark.svg" alt="" />
         <span>Hilbertech Hotel Portal</span>
       </div>
 
@@ -431,7 +427,7 @@ body{
       </div>
 
     </div>
-  </main>
+  </div>
 </div>
 </body>
 </html>
