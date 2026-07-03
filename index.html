@@ -163,18 +163,22 @@ body{
 #api input[aria-invalid="true"]:focus,
 #api .entry-item.error input:focus{ box-shadow:0 0 0 3px rgba(220,38,38,.18); }
 
-/* Field-level error (.error.itemLevel) — appearance only; B2C controls visibility */
+/* Field-level error (.error.itemLevel) — HIDDEN until B2C injects real text */
 #api .error.itemLevel,
-#api .itemLevel{
-  color:var(--danger-700); font-size:12.5px; font-weight:500;
-  margin-top:6px;
+#api .itemLevel{ display:none; }
+#api .error.itemLevel:has(*:not(:empty)),
+#api .itemLevel:has(*:not(:empty)){
+  display:block; color:var(--danger-700); font-size:12.5px; font-weight:500; margin-top:6px;
 }
 #api .error.itemLevel p,
 #api .itemLevel p{ margin:0; }
 
-/* Page-level error banner (.error.pageLevel) — appearance only */
+/* Page-level error banner (.error.pageLevel) — HIDDEN until it has real content */
 #api .error.pageLevel,
-#api .pageLevel{
+#api .pageLevel{ display:none; }
+#api .error.pageLevel:has(*:not(:empty)),
+#api .pageLevel:has(*:not(:empty)){
+  display:block;
   background:var(--danger-50);
   border:1px solid var(--danger-100);
   color:var(--danger-700);
@@ -184,11 +188,8 @@ body{
   margin:0 0 18px;
   position:relative;
 }
-/* Don't override B2C's hidden default; reveal only when there's real error text */
-#api .error.itemLevel:empty,
-#api .error.pageLevel:empty{ display:none; }
-#api .error.itemLevel:has(:not(:empty)),
-#api .error.pageLevel:has(:not(:empty)){ display:block; }
+#api .error.pageLevel p,
+#api .pageLevel p{ margin:0; }
 #api .error.pageLevel p,
 #api .pageLevel p{ margin:0; }
 #api .error.pageLevel::before,
@@ -307,9 +308,9 @@ body{
   animation:hb-spin .7s linear infinite;
 }
 
-/* Full-form working spinner some contracts render */
+/* Full-form working spinner — HIDDEN at rest; B2C reveals it during verification */
 #api .working,
-#api #claimVerificationSpinner{ display:block; min-height:40px; position:relative; margin:6px 0; }
+#api #claimVerificationSpinner{ display:none; min-height:40px; position:relative; margin:6px 0; }
 #api .working::after,
 #api #claimVerificationSpinner::after{
   content:""; position:absolute; top:50%; left:50%;
